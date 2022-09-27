@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/NameAndPic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@drawable/white_bottom_border"
+        android:orientation="horizontal"
+        android:padding="15dp">
+
+        <ImageView
+            android:id="@+id/ServicePricePic"
+            android:layout_width="57dp"
+            android:layout_height="57dp"
+            android:src="@drawable/electricity" />
+
+        <TextView
+            android:id="@+id/ServicePriceDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/cairo_light"
+            android:gravity="center"
+            android:text="@string/PlaceHolder"
+            android:textColor="@color/white"
+            android:textSize="10dp" />
+
+    </LinearLayout>
+</LinearLayout>
