@@ -24,71 +24,89 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class SubServiceAdapter extends RecyclerView.Adapter<SubServiceAdapter.ViewHolder>{
+public class SubServiceAdapter extends BaseExpandableListAdapter{
 
     Context mContext;
-    private List<SubServiceModel> subServiceModelList;
-    private List<ServicePriceListModel> servicePriceListModels = new ArrayList<>();
+    private List<SubServiceModel> subServiceModelList = new ArrayList<>();
+    private HashMap<String, List<ServicePriceListModel>> servicePriceListModels;
 
-    public SubServiceAdapter(Context context, List<SubServiceModel> subServiceModelList, List<ServicePriceListModel> servicePriceListModels) {
-        this.mContext = context;
+
+    public SubServiceAdapter(Context mContext, List<SubServiceModel> subServiceModelList, HashMap<String, List<ServicePriceListModel>> servicePriceListModels) {
+        this.mContext = mContext;
         this.subServiceModelList = subServiceModelList;
         this.servicePriceListModels = servicePriceListModels;
     }
 
-    @NonNull
     @Override
-    public SubServiceAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater ll = LayoutInflater.from(mContext);
-        View itemView = LayoutInflater.from(mContext).inflate(R.layout.expandable_listview_parent, parent,false);
-        return new SubServiceAdapter.ViewHolder(itemView);
+    public Object getChild(int listPosition, int expandedListPosition) {
+        return this.servicePriceListModels.get(this.subServiceModelList.get(listPosition).getSubServiceNameAr())
+                .get(expandedListPosition).getDescriptionAr();
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SubServiceAdapter.ViewHolder holder, int position) {
-        holder.SubServiceName.setText("" + subServiceModelList.get(position).getSubServiceNameAr());
+    public long getChildId(int listPosition, int expandedListPosition) {
+        return expandedListPosition;
     }
 
     @Override
-    public int getItemCount() {
-        return null!=subServiceModelList?subServiceModelList.size():0;
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView SubServiceName;
-        RecyclerView ServicePriceRV;
-        ServicePriceListAdapter servicePriceListAdapter;
-        ServicePriceListViewModel servicePriceListViewModel;
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            SubServiceName = itemView.findViewById(R.id.SubServiceName);
-            ServicePriceRV = itemView.findViewById(R.id.RVServicePriceList);
-            ServicePriceRV.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-            servicePriceListViewModel.getServicePriceLists();
-            FillServicePriceList();
-            final CardView cardView = itemView.findViewById(R.id.cardView_device_coin_token);
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (servicePriceListAdapter == null) {
-                        servicePriceListAdapter = new ServicePriceListAdapter(mContext, servicePriceListModels);
-//                        servicePriceListAdapter.get
-                    }else {
-                        ServicePriceRV.setAdapter(null);
-                        servicePriceListAdapter = null;
-                    }
-                }
-            });
+    public View getChildView(int listPosition, final int expandedListPosition,
+                             boolean isLastChild, View convertView, ViewGroup parent) {
+        final String expandedListText = (String) getChild(listPosition, expandedListPosition);
+        if (convertView == null) {
+            LayoutInflater layoutInflater = (LayoutInflater) this.mContext
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.expandable_listview_child, null);
         }
-
-        private void FillServicePriceList() {
-            servicePriceListViewModel.ServicePriceListMutableData(mContext, new Observer<ResponseModel>() {
-                @Override
-                public void onChanged(ResponseModel responseModel) {
-
-                }
-            })
-        }
+        TextView expandedListTextView = (TextView) convertView
+                .findViewById(R.id.ServicePriceDesc);
+        expandedListTextView.setText(expandedListText);
+        return convertView;
     }
-}
+
+    @Override
+    public int getChildrenCount(int listPosition) {
+        return this.servicePriceListModels.get(this.subServiceModelList.get(listPosition).getSubServiceNameAr())
+                .size();
+    }
+
+    @Override
+    public Object getGroup(int listPosition) {
+        return this.subServiceModelList.get(listPosition).getSubServiceNameAr();
+    }
+
+    @Override
+    public int getGroupCount() {
+        return this.subServiceModelList.size();
+    }
+
+    @Override
+    public long getGroupId(int listPosition) {
+        return listPosition;
+    }
+
+    @Override
+    public View getGroupView(int listPosition, boolean isExpanded,
+                             View convertView, ViewGroup parent) {
+        String listTitle = (String) getGroup(listPosition);
+        if (convertView == null) {
+            LayoutInflater layoutInflater = (LayoutInflater) this.mContext.
+                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.expandable_listview_parent, null);
+        }
+        TextView listTitleTextView = (TextView) convertView
+                .findViewById(R.id.SubServiceName);
+        listTitleTextView.setTypeface(null, Typeface.BOLD);
+        listTitleTextView.setText(listTitle);
+        return convertView;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
+
+    @Override
+    public boolean isChildSelectable(int listPosition, int expandedListPosition) {
+        return true;
+    }}
 

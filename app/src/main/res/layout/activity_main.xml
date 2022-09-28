@@ -39,8 +39,8 @@
                 tools:listitem="@layout/main_service_item" />
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/RVSubService"
+        <ExpandableListView
+            android:id="@+id/ELVSubService"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="100dp"
